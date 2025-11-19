@@ -1,0 +1,59 @@
+{% extends 'tasks/base.html' %} {% block content %}
+<div class="header">
+  <h1>➕ Új feladat létrehozása</h1>
+  <a href="{% url 'task_list' %}" class="btn">← Vissza</a>
+</div>
+
+<form method="post">
+  {% csrf_token %}
+
+  <div class="form-group">
+    <label for="title">Feladat neve *</label>
+    <input
+      type="text"
+      id="title"
+      name="title"
+      required
+      placeholder="pl. Bevásárlás"
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="description">Leírás</label>
+    <textarea
+      id="description"
+      name="description"
+      placeholder="Részletes leírás a feladatról..."
+    ></textarea>
+  </div>
+
+  <div class="form-group">
+    <label for="priority">Prioritás</label>
+    <select id="priority" name="priority">
+      <option value="low">Alacsony</option>
+      <option value="medium" selected>Közepes</option>
+      <option value="high">Magas</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="due_date">Határidő (opcionális)</label>
+    <input type="datetime-local" id="due_date" name="due_date" />
+  </div>
+
+  <div style="display: flex; gap: 10px">
+    <button type="submit" class="btn btn-success">✓ Létrehozás</button>
+    <a href="{% url 'task_list' %}" class="btn" style="background: #95a5a6"
+      >Mégse</a
+    >
+  </div>
+</form>
+
+<style>
+  form {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 10px;
+  }
+</style>
+{% endblock %}

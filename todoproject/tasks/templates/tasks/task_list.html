@@ -1,0 +1,179 @@
+{% extends 'tasks/base.html' %}
+
+{% block content %}
+<div class="header">
+    <h1>📝 Feladataim</h1>
+    <a href="{% url 'task_create' %}" class="btn">+ Új feladat</a>
+</div>
+
+<div class="filters">
+    <form method="get" style="display: flex; gap: 10px; margin: 0;">
+        <select name="status" onchange="this.form.submit()">
+            <option value="">Minden státusz</option>
+            <option value="todo" {% if status_filter == 'todo' %}selected{% endif %}>Tennivaló</option>
+            <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>Folyamatban</option>
+            <option value="done" {% if status_filter == 'done' %}selected{% endif %}>Kész</option>
+        </select>
+
+        <select name="priority" onchange="this.form.submit()">
+            <option value="">Minden prioritás</option>
+            <option value="low" {% if priority_filter == 'low' %}selected{% endif %}>Alacsony</option>
+            <option value="medium" {% if priority_filter == 'medium' %}selected{% endif %}>Közepes</option>
+            <option value="high" {% if priority_filter == 'high' %}selected{% endif %}>Magas</option>
+        </select>
+
+        {% if status_filter or priority_filter %}
+        <a href="{% url 'task_list' %}" class="btn btn-small">Szűrők törlése</a>
+        {% endif %}
+    </form>
+</div>
+
+<style>
+    .task-card {
+        background: #f8f9fa;
+        border-left: 4px solid #667eea;
+        padding: 20px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .task-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .task-card.done {
+        opacity: 0.7;
+        border-left-color: #27ae60;
+    }
+
+    .task-card.high {
+        border-left-color: #e74c3c;
+    }
+
+    .task-card.low {
+        border-left-color: #95a5a6;
+    }
+
+    .task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 10px;
+    }
+
+    .task-title {
+        font-size: 20px;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+
+    .task-title.done {
+        text-decoration: line-through;
+        color: #7f8c8d;
+    }
+
+    .task-meta {
+        display: flex;
+        gap: 15px;
+        font-size: 14px;
+        color: #7f8c8d;
+        margin-bottom: 10px;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .badge-status {
+        background: #3498db;
+        color: white;
+    }
+
+    .badge-priority {
+        background: #f39c12;
+        color: white;
+    }
+
+    .badge-priority.high {
+        background: #e74c3c;
+    }
+
+    .badge-priority.low {
+        background: #95a5a6;
+    }
+
+    .task-description {
+        color: #555;
+        margin-bottom: 15px;
+        line-height: 1.5;
+    }
+
+    .task-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #95a5a6;
+    }
+
+    .empty-state h2 {
+        color: #95a5a6;
+        margin-bottom: 10px;
+    }
+</style>
+
+{% if tasks %}
+    {% for task in tasks %}
+    <div class="task-card {% if task.status == 'done' %}done{% endif %} {{ task.priority }}">
+        <div class="task-header">
+            <h3 class="task-title {% if task.status == 'done' %}done{% endif %}">
+                {{ task.title }}
+            </h3>
+        </div>
+
+        <div class="task-meta">
+            <span class="badge badge-status">{{ task.get_status_display }}</span>
+            <span class="badge badge-priority {{ task.priority }}">{{ task.get_priority_display }}</span>
+            {% if task.due_date %}
+            <span>📅 {{ task.due_date|date:"Y-m-d H:i" }}</span>
+            {% endif %}
+        </div>
+
+        {% if task.description %}
+        <div class="task-description">
+            {{ task.description }}
+        </div>
+        {% endif %}
+
+        <div class="task-actions">
+            <form method="post" action="{% url 'task_toggle' task.pk %}" style="display: inline; margin: 0;">
+                {% csrf_token %}
+                {% if task.status == 'done' %}
+                <button type="submit" class="btn btn-small">↩️ Újra megnyitás</button>
+                {% else %}
+                <button type="submit" class="btn btn-success btn-small">✓ Kész</button>
+                {% endif %}
+            </form>
+            <a href="{% url 'task_update' task.pk %}" class="btn btn-small">✏️ Szerkesztés</a>
+            <a href="{% url 'task_delete' task.pk %}" class="btn btn-danger btn-small">🗑️ Törlés</a>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state">
+        <h2>📭 Nincs még feladatod!</h2>
+        <p>Kezdj el dolgozni azzal, hogy létrehozol egy új feladatot.</p>
+        <a href="{% url 'task_create' %}" class="btn" style="margin-top: 20px;">+ Első feladat létrehozása</a>
+    </div>
+{% endif %}
+{% endblock %}

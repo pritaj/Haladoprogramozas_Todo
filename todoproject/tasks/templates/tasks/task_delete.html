@@ -1,0 +1,76 @@
+{% extends 'tasks/base.html' %} {% block content %}
+<div class="header">
+  <h1>🗑️ Feladat törlése</h1>
+  <a href="{% url 'task_list' %}" class="btn">← Vissza</a>
+</div>
+
+<div
+  style="
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  "
+>
+  <h2 style="color: #856404; margin-bottom: 10px">⚠️ Figyelmeztetés</h2>
+  <p style="color: #856404">
+    Biztosan törölni szeretnéd ezt a feladatot? Ez a művelet nem vonható vissza!
+  </p>
+</div>
+
+<div
+  style="
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  "
+>
+  <h3 style="color: #2c3e50; margin-bottom: 15px">{{ task.title }}</h3>
+
+  {% if task.description %}
+  <p style="color: #555; margin-bottom: 15px; line-height: 1.5">
+    {{ task.description }}
+  </p>
+  {% endif %}
+
+  <div style="display: flex; gap: 10px; font-size: 14px; color: #7f8c8d">
+    <span
+      style="
+        background: #3498db;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+      "
+    >
+      {{ task.get_status_display }}
+    </span>
+    <span
+      style="
+        background: #f39c12;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+      "
+    >
+      {{ task.get_priority_display }}
+    </span>
+    {% if task.due_date %}
+    <span>📅 {{ task.due_date|date:"Y-m-d H:i" }}</span>
+    {% endif %}
+  </div>
+</div>
+
+<form method="post">
+  {% csrf_token %}
+  <div style="display: flex; gap: 10px">
+    <button type="submit" class="btn btn-danger">🗑️ Törlés</button>
+    <a href="{% url 'task_list' %}" class="btn" style="background: #95a5a6"
+      >Mégse</a
+    >
+  </div>
+</form>
+{% endblock %}
