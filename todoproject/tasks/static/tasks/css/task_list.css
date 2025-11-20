@@ -1,0 +1,143 @@
+*.task-card {
+  background: #f8f9fa;
+  border-left: 4px solid #667eea;
+  padding: 20px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.task-card.done {
+  opacity: 0.7;
+  border-left-color: #27ae60;
+}
+
+.task-card.high {
+  border-left-color: #e74c3c;
+}
+
+.task-card.low {
+  border-left-color: #95a5a6;
+}
+
+.task-card.overdue {
+  border-left-color: #e74c3c;
+  background: #fff5f5;
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 10px;
+}
+
+.task-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.task-title.done {
+  text-decoration: line-through;
+  color: #7f8c8d;
+}
+
+.task-meta {
+  display: flex;
+  gap: 15px;
+  font-size: 14px;
+  color: #7f8c8d;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.badge-status {
+  background: #3498db;
+  color: white;
+}
+
+.badge-priority {
+  background: #f39c12;
+  color: white;
+}
+
+.badge-priority.high {
+  background: #e74c3c;
+}
+
+.badge-priority.low {
+  background: #95a5a6;
+}
+
+.deadline-badge {
+  padding: 5px 12px;
+  border-radius: 5px;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+}
+
+.deadline-overdue {
+  background: #e74c3c;
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+.deadline-soon {
+  background: #f39c12;
+  color: white;
+}
+
+.deadline-ok {
+  background: #3498db;
+  color: white;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.task-description {
+  color: #555;
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.task-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #95a5a6;
+}
+
+.empty-state h2 {
+  color: #95a5a6;
+  margin-bottom: 10px;
+}

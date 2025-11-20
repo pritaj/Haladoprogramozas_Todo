@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-# Create your models here.
+
 class Task(models.Model):
     PRIORITY_CHOICES = [
         ('low', 'Alacsony'),
@@ -10,7 +10,7 @@ class Task(models.Model):
     
     STATUS_CHOICES = [
         ('todo', 'Tennivaló'),
-        ('inprogress', 'Folyamatban'),
+        ('in_progress', 'Folyamatban'),
         ('done', 'Kész'),
     ]
     
@@ -23,12 +23,18 @@ class Task(models.Model):
     updatedat= models.DateTimeField(auto_now=True, verbose_name='Módosítva')
     
     class Meta:
-        ordering = [ '-createdat' ]
+        ordering = ['-createdat']
         verbose_name = 'Feladat'
         verbose_name_plural = 'Feladatok'
     
     def  __str__(self):
         return self.title
+    
+    def completion_time(self):
+        if self.status == 'done':
+            delta = self.updatedat - self.createdat
+            return delta.total_seconds() / 3600
+        return None
     
     
      

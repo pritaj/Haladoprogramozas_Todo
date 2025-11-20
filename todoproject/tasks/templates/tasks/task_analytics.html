@@ -1,0 +1,301 @@
+{% extends 'tasks/base.html' %} {% block content %} {% load static %}
+<div class="header">
+  <link rel="stylesheet" href="{% static 'tasks/css/task_analytics.css' %}" />
+  <h1>
+    <img
+      src="{% static 'tasks/images/increase.png' %}"
+      alt="Logo"
+      style="width: 30px; height: 30px"
+    />
+    Feladat Elemzések
+  </h1>
+  <a href="{% url 'task_list' %}" class="btn">← Vissza a feladatokhoz</a>
+</div>
+<!-- Összefoglaló kártyák -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <h3>
+      <img
+        src="{% static 'tasks/images/pencil.png' %}"
+        alt="Logo"
+        style="width: 18px; height: 18px"
+      />
+      Összes feladat
+    </h3>
+    <div class="value">{{ total_tasks }}</div>
+    <div class="label">Létrehozott feladatok</div>
+  </div>
+
+  <div
+    class="stat-card"
+    style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%)"
+  >
+    <h3>
+      <img
+        src="{% static 'tasks/images/check.png' %}"
+        alt="Logo"
+        style="width: 18px; height: 18px"
+      />
+      Befejezett
+    </h3>
+    <div class="value">{{ completed_tasks }}</div>
+    <div class="label">Teljesített feladatok</div>
+  </div>
+
+  <div
+    class="stat-card"
+    style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%)"
+  >
+    <h3>
+      <img
+        src="{% static 'tasks/images/sandclock.png' %}"
+        alt="Logo"
+        style="width: 18px; height: 18px"
+      />
+      Folyamatban
+    </h3>
+    <div class="value">{{ pending_tasks }}</div>
+    <div class="label">Aktív feladatok</div>
+  </div>
+</div>
+
+<!-- Lineáris regressziós előrejelzések -->
+<div class="analysis-section">
+  <h2>Befejezési idő előrejelzések (Lineáris regresszió)</h2>
+
+  <div class="info-box">
+    <h3>
+      <img
+        src="{% static 'tasks/images/letter.png' %}"
+        alt="Logo"
+        style="width: 18px; height: 18px"
+      />
+      Hogyan működik?
+    </h3>
+    <p>
+      A lineáris regresszió matematikai modellt használ a múltbeli feladatok
+      adatai alapján. Az algoritmus elemzi, hogy a különböző prioritású
+      feladatok átlagosan mennyi idő alatt készülnek el, és ezt felhasználva
+      előrejelzi az új feladatok várható befejezési idejét.
+    </p>
+  </div>
+
+  {% if predictions %}
+  <div class="prediction-card high">
+    <h3 style="color: #e74c3c; margin-bottom: 10px">
+      <img
+        src="{% static 'tasks/images/red.png' %}"
+        alt="Logo"
+        style="width: 18px; height: 18px"
+      />
+      Magas prioritású feladat
+    </h3>
+    <p
+      style="font-size: 24px; font-weight: bold; color: #2c3e50; margin: 10px 0"
+    >
+      {{ predictions.high.predicted_hours|floatformat:1 }} óra
+    </p>
+    <p style="color: #7f8c8d">
+      ≈ {{ predictions.high.predicted_days|floatformat:1 }} nap
+    </p>
+  </div>
+
+  <div class="prediction-card">
+    <h3 style="color: #f39c12; margin-bottom: 10px">
+      <img
+        src="{% static 'tasks/images/yellow.png' %}"
+        alt="Logo"
+        style="width: 25px; height: 25px"
+      />
+      Közepes prioritású feladat
+    </h3>
+    <p
+      style="font-size: 24px; font-weight: bold; color: #2c3e50; margin: 10px 0"
+    >
+      {{ predictions.medium.predicted_hours|floatformat:1 }} óra
+    </p>
+    <p style="color: #7f8c8d">
+      ≈ {{ predictions.medium.predicted_days|floatformat:1 }} nap
+    </p>
+  </div>
+
+  <div class="prediction-card low">
+    <h3 style="color: #95a5a6; margin-bottom: 10px">
+      <img
+        src="{% static 'tasks/images/white.png' %}"
+        alt="Logo"
+        style="width: 18px; height: 18px"
+      />
+      Alacsony prioritású feladat
+    </h3>
+    <p
+      style="font-size: 24px; font-weight: bold; color: #2c3e50; margin: 10px 0"
+    >
+      {{ predictions.low.predicted_hours|floatformat:1 }} óra
+    </p>
+    <p style="color: #7f8c8d">
+      ≈ {{ predictions.low.predicted_days|floatformat:1 }} nap
+    </p>
+  </div>
+  {% else %}
+  <div class="no-data">
+    <p>⚠️ Nincs elég adat az előrejelzéshez. Fejezz be legalább 2 feladatot!</p>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Státusz eloszlás -->
+{% if status_distribution %}
+<div class="analysis-section">
+  <h2>
+    <img
+      src="{% static 'tasks/images/increase.png' %}"
+      alt="Logo"
+      style="width: 30px; height: 30px"
+    />
+    Feladatok eloszlása státusz szerint
+  </h2>
+  <div class="chart-container">
+    {% for status, data in status_distribution.items %}
+    <div style="margin-bottom: 15px">
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 5px;
+        "
+      >
+        <span style="font-weight: bold">{{ status }}</span>
+        <span>{{ data.count }} feladat ({{ data.percentage }}%)</span>
+      </div>
+      <div class="bar" style="width: {{ data.percentage }}%;">
+        <span class="bar-label">{{ data.percentage }}%</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Prioritás szerinti statisztikák -->
+{% if priority_stats %}
+<div class="analysis-section">
+  <h2>
+    <img
+      src="{% static 'tasks/images/alarm.png' %}"
+      alt="Logo"
+      style="width: 30px; height: 30px"
+    />
+    Prioritás szerinti befejezési idők
+  </h2>
+  <table class="priority-table">
+    <thead>
+      <tr>
+        <th>Prioritás</th>
+        <th>Feladatok száma</th>
+        <th>Átlag idő</th>
+        <th>Min idő</th>
+        <th>Max idő</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for priority, stats in priority_stats.items %}
+      <tr>
+        <td style="font-weight: bold">{{ priority }}</td>
+        <td>{{ stats.count }}</td>
+        <td>{{ stats.avg_time|floatformat:1 }} óra</td>
+        <td>{{ stats.min_time|floatformat:1 }} óra</td>
+        <td>{{ stats.max_time|floatformat:1 }} óra</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<!-- Befejezési statisztikák -->
+{% if completion_stats %}
+<div class="analysis-section">
+  <h2>📈 Általános befejezési statisztikák</h2>
+  <div
+    style="
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    "
+  >
+    <div style="background: white; padding: 15px; border-radius: 8px">
+      <div style="color: #7f8c8d; font-size: 14px">Átlagos idő</div>
+      <div style="font-size: 24px; font-weight: bold; color: #667eea">
+        {{ completion_stats.avg_completion_time|floatformat:1 }} óra
+      </div>
+    </div>
+    <div style="background: white; padding: 15px; border-radius: 8px">
+      <div style="color: #7f8c8d; font-size: 14px">Medián idő</div>
+      <div style="font-size: 24px; font-weight: bold; color: #667eea">
+        {{ completion_stats.median_completion_time|floatformat:1 }} óra
+      </div>
+    </div>
+    <div style="background: white; padding: 15px; border-radius: 8px">
+      <div style="color: #7f8c8d; font-size: 14px">Leggyorsabb</div>
+      <div style="font-size: 24px; font-weight: bold; color: #27ae60">
+        {{ completion_stats.min_completion_time|floatformat:1 }} óra
+      </div>
+    </div>
+    <div style="background: white; padding: 15px; border-radius: 8px">
+      <div style="color: #7f8c8d; font-size: 14px">Leglassabb</div>
+      <div style="font-size: 24px; font-weight: bold; color: #e74c3c">
+        {{ completion_stats.max_completion_time|floatformat:1 }} óra
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Heti trend -->
+{% if weekly_trend %}
+<div class="analysis-section">
+  <h2>
+    <img
+      src="{% static 'tasks/images/calendar.png' %}"
+      alt="Logo"
+      style="width: 30px; height: 30px"
+    />
+    Heti befejezési trend (utolsó 4 hét)
+  </h2>
+  <div class="chart-container">
+    {% for week in weekly_trend %}
+    <div style="margin-bottom: 15px">
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 5px;
+        "
+      >
+        <span style="font-weight: bold">{{ week.week }}</span>
+        <span>{{ week.completed }} befejezett feladat</span>
+      </div>
+      <div
+        class="bar"
+        style="width: {{ week.completed|add:0 }}0%; max-width: 100%;"
+      >
+        <span class="bar-label">{{ week.completed }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %} {% if not completion_stats and not status_distribution %}
+<div class="no-data">
+  <h2>📭 Nincs elég adat az elemzéshez</h2>
+  <p>
+    Hozz létre és fejezz be néhány feladatot, hogy lásd a statisztikákat és
+    előrejelzéseket!
+  </p>
+  <a href="{% url 'task_create' %}" class="btn" style="margin-top: 20px"
+    >+ Új feladat létrehozása</a
+  >
+</div>
+{% endif %} {% endblock %}
