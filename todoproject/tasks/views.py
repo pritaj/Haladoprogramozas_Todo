@@ -44,14 +44,20 @@ def task_list(request):
 def task_create(request):
     """Új feladat létrehozása"""
     if request.method == 'POST':
-        form = TaskForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('task_list')
-    else:
-        form = TaskForm()
-    
-    return render(request, 'tasks/task_create.html', {'form': form})
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        priority = request.POST.get('priority')
+        deadline = request.POST.get('deadline')
+
+        Task.objects.create(
+            title=title,
+            description=description,
+            priority=priority,
+            deadline=deadline if deadline else None
+        )
+        return redirect('task_list')
+
+    return render(request, 'tasks/task_create.html')
 
 
 def task_update(request, pk):

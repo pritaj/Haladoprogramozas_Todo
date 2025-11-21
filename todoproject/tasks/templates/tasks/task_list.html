@@ -13,9 +13,8 @@
 <div class="filters">
     <form method="get" style="display: flex; gap: 10px; margin: 0;">
         <select name="status" onchange="this.form.submit()">
-            <option value="">Minden státusz</option>
             <option value="todo" {% if status_filter == 'todo' %}selected{% endif %}>Tennivaló</option>
-            <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>Folyamatban</option>
+            <option value="inprogress" {% if status_filter == 'inprogress' %}selected{% endif %}>Folyamatban</option>
             <option value="done" {% if status_filter == 'done' %}selected{% endif %}>Kész</option>
         </select>
 
